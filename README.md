@@ -1,12 +1,14 @@
 # Colaborador · base de datos
 
-Cloud Firestore en modo nativo. El backend accede mediante el SDK de administración; el frontend no se conecta directamente a Firestore. Por eso las reglas impiden el acceso desde clientes. Los índices compuestos se incorporan cuando una consulta del backend requiere filtrar por un campo y ordenar por otro; no hay consultas de ese tipo especificadas para este paso.
+Cloud Firestore en modo nativo. El backend accede mediante `firebase-admin`; el frontend no accede directamente a Firestore. Por eso, `firestore.rules` deniega las lecturas y escrituras de clientes. Los esquemas de las colecciones están en `docs/collections/`.
 
-## Emulador y datos de ejemplo
+## Desarrollo local
 
-Requiere Node.js 24 o posterior. Ejecuta `npm install` y, en una terminal, `npm run emulator`. Firestore escucha en `127.0.0.1:8085` y el panel del emulador en el puerto `4005`. En otra terminal ejecuta `npm run seed:emulator` para aplicar los scripts disponibles en `firestore/seeds` por orden de versión. El runner registra los scripts aplicados en `_seedHistory`; no modifiques un script que ya se haya aplicado.
+Se requiere Node.js 24 o posterior. Ejecuta `npm install` y, en una terminal, `npm run emulator`. El emulador de Firestore escucha en `127.0.0.1:8085` y su panel en el puerto `4005`.
 
-Para conectar el backend local, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` en su entorno. El backend escucha en el puerto `8080` y atiende al frontend en el puerto `4200`; el frontend no necesita credenciales de Firestore.
+En otra terminal, ejecuta `npm run seed:emulator` para aplicar los scripts disponibles de `firestore/seeds/` en orden de versión. El runner registra los scripts aplicados en `_seedHistory`; no edites un script que ya se haya aplicado. También puedes ejecutar `npm run check` para comprobar los scripts y `npm run test:seeds` para probar la carga en el emulador.
+
+Para conectar el backend local, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` en su entorno. Su API escucha en el puerto `8080`; el frontend Angular escucha en `4200`, dirige `/api` a esa API y no necesita credenciales de Firestore. Consulta `docs/backend/README.md` para arrancar el backend.
 
 ## Scripts y colecciones
 
@@ -17,10 +19,10 @@ Para conectar el backend local, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRE
 | `firestore/seeds/V4__employee_benefits.js` | Beneficios y saldos | `employeeBenefits` |
 | `firestore/seeds/V6__overtime_records.js` | Horas extras | `overtimeRecords` |
 
-Mis solicitudes utiliza `employeeRequests`, creada por Inicio del colaborador; Acceso al portal no crea una colección propia. Los esquemas de las colecciones creadas por cada script están en `docs/collections/`. El script compartido del core, si se genera, se ejecutará antes de los scripts de los módulos.
+Calendario personal de ausencias y feriados, Lectura de comunicados y Mis solicitudes no tienen scripts propios: usan colecciones ya creadas por Inicio. Acceso al portal tampoco tiene un script propio. Los números de versión de la tabla corresponden a los archivos de esos módulos; no se crean scripts vacíos para cubrir los números restantes.
 
-## Proyecto real
+## Administrador inicial y entornos reales
 
-Configura `GOOGLE_APPLICATION_CREDENTIALS` con la ruta a una cuenta de servicio autorizada y `FIREBASE_PROJECT_ID` con el identificador del proyecto. Ejecuta `npm run seed` para aplicar los scripts pendientes y `npm run deploy:firestore` para desplegar reglas e índices. No incluyas credenciales en el repositorio.
+El administrador inicial se crea con la herramienta fija `scripts/create-admin.js`, no con un script de carga que contenga contraseñas. En el emulador, ejecuta `npm run create-admin:emulator -- --email=admin@example.com --name="Administrador de ejemplo"`. Puedes proporcionar la contraseña mediante `ADMIN_PASSWORD` en el entorno; si no la proporcionas, la herramienta genera una y la muestra una sola vez. Usa `--reset` para restablecer la contraseña de una cuenta existente. Configura `--role` con el código de administrador que exija el backend cuando corresponda.
 
-Para crear el administrador inicial usa `npm run create-admin -- --email=admin@example.com --name="Administrador" --role=CODIGO_DE_ROL`, sustituyendo el rol por el código que acepta el backend. Establece `ADMIN_PASSWORD` en el entorno o deja que el comando genere una contraseña y la muestre una sola vez. Usa `--reset` para restablecerla. En el emulador está disponible `npm run create-admin:emulator`. Cuando se carguen usuarios de demostración mediante el core, la contraseña de demostración es `Demo1234!`; no se almacena en texto plano.
+Para un proyecto real, configura `GOOGLE_APPLICATION_CREDENTIALS` con la ruta de una cuenta de servicio autorizada y `FIREBASE_PROJECT_ID` con el identificador del proyecto. Ejecuta `npm run seed` para cargar los datos que correspondan y `npm run create-admin -- --email=admin@example.com --name="Administrador"` para crear el administrador. Revisa los datos de ejemplo antes de cargarlos en producción. Despliega las reglas y los índices con `npm run deploy:firestore`.
