@@ -7,3 +7,4 @@ ui-debug.log*
 service-account*.json
 .env
 dist
+.env.local

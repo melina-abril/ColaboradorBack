@@ -44,7 +44,8 @@ export const env = {
     .filter(Boolean),
   session: {
     jwtSecret: sessionSecret(),
-    cookieName: 'app_session',
+    /** Firebase Hosting solo le pasa a la function la cookie __session: ahí se configura SESSION_COOKIE_NAME=__session. */
+    cookieName: envText('SESSION_COOKIE_NAME', 'app_session'),
     hours: envInteger('SESSION_HOURS', 8),
     /** Cookie solo por HTTPS: por defecto true en producción y false en desarrollo (http://localhost). */
     cookieSecure: envText('COOKIE_SECURE', isProduction ? 'true' : 'false') === 'true',
