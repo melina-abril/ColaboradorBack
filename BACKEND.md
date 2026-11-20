@@ -1,24 +1,25 @@
-# Colaborador · Backend
+# Colaborador · backend
 
-Estructura inicial de la API REST. Todavía no hay módulos de funcionalidad ni endpoints propios de módulos. El punto de entrada existente expone `GET /api/health` y las rutas de sesión bajo `/api/auth`.
+API REST del portal del colaborador. Este archivo documenta el backend por separado: `README.md` ya pertenece a la capa de base de datos en este repositorio.
 
 ## Requisitos y arranque
 
-- Node.js 24 o posterior.
-- Cloud Firestore disponible: en desarrollo, el emulador de la capa database escucha en `127.0.0.1:8085` con el proyecto `demo-app`.
+Se requieren Node.js 24, npm y Cloud Firestore. Instala las dependencias con `npm install`. Para desarrollo, arranca el emulador y aplica los datos de ejemplo siguiendo `README.md`; después ejecuta `npm run dev`. Para compilar y arrancar el código compilado, ejecuta `npm run build && npm start`.
 
-Instala las dependencias con `npm install`. Para desarrollo, ejecuta `npm run dev`. Para compilar y arrancar, ejecuta `npm run build && npm start`. La API usa el puerto 8080 configurado por defecto en `src/config/env.ts`.
+La API escucha en el puerto `8080` de forma predeterminada. El backend no crea colecciones ni carga datos de ejemplo. Para crear el primer usuario, sigue las instrucciones de administración de `README.md`.
 
 ## Configuración
 
-Consulta el archivo fijo `.env.example` para los valores de ejemplo y configura las variables que leen `src/config/env.ts` y `src/config/database.ts`. En desarrollo, utiliza `FIREBASE_PROJECT_ID=demo-app`, `GCLOUD_PROJECT=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` para conectarte al emulador. `PORT` configura el puerto de la API; configura también el origen permitido del frontend mediante la variable de CORS indicada en `.env.example`.
+Las variables se configuran en el entorno; `src/config/env.ts` y `src/config/database.ts` contienen la configuración efectiva. `PORT` permite cambiar el puerto predeterminado `8080`. En desarrollo, usa `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085` para conectar con el emulador de la base de datos; configura `GCLOUD_PROJECT=demo-app` si el entorno lo requiere. Configura `FRONT_URL=http://localhost:4200` para permitir el origen del frontend. Para producción, usa `NODE_ENV=production` y establece `JWT_SECRET` con un valor aleatorio de al menos 32 caracteres; configura las credenciales del proyecto Firestore según el entorno de despliegue. Consulta el `.env.example` existente para las demás opciones de sesión y conexión. No uses la configuración del emulador en producción.
 
-En producción, establece `NODE_ENV=production` y un `JWT_SECRET` aleatorio de al menos 32 caracteres. Configura el proyecto y las credenciales de Firebase conforme a las opciones del archivo fijo y no guardes secretos en el repositorio.
+## Endpoints
 
-## Sesión
+Todos los endpoints de los módulos requieren sesión. La infraestructura compartida proporciona `GET /api/health`, `POST /api/auth/login`, `POST /api/auth/logout` y `GET /api/auth/me`.
 
-La sesión existente ofrece `POST /api/auth/login`, `POST /api/auth/logout` y `GET /api/auth/me`. El login consulta la colección `users` de Firestore. La base todavía no contiene colecciones ni usuarios de ejemplo: consulta el `README.md` de la capa database para preparar las colecciones y crear el primer usuario cuando estén disponibles.
+- **Mi perfil** (`employee-profile`): `GET /api/employee-profiles/me`, `GET /api/employee-profiles/me/contract`, `GET /api/employee-profiles/me/trainings`, `POST /api/employee-profiles/me/trainings` y `GET /api/employee-profiles/me/trainings/:id/document`.
+- **Beneficios y saldos** (`employee-benefits`): `GET /api/employee-benefits`.
+- **Inicio del colaborador** (`employee-home`): `GET /api/employee-homes/summary`.
 
-## Integración con la base de datos
+## Conexión con las otras capas
 
-La capa database administra Firestore, sus reglas, índices y scripts de carga en este mismo repositorio. Arranca su emulador antes de usar la API y mantén iguales `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y `FIRESTORE_EMULATOR_HOST` en ambas capas. Este backend no crea colecciones ni ejecuta scripts de carga. El archivo `README.md` de la raíz pertenece a la capa database; esta guía se mantiene separada para no sobrescribirlo.
+El frontend está en `https://github.com/melina-abril/ColaboradorFront` y escucha en `4200`; su proxy envía `/api` a `http://localhost:8080`. El backend debe admitir `http://localhost:4200` mediante `FRONT_URL`. La base Firestore se configura en este mismo repositorio: su emulador escucha en `127.0.0.1:8085` y utiliza el proyecto `demo-app`. La API accede a Firestore mediante `firebase-admin`; el frontend no accede directamente a la base. Las colecciones, los scripts de carga y sus instrucciones están en `README.md` y `docs/collections/`.

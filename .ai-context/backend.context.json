@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "backend",
   "kind": "features",
-  "generatedAt": "2026-11-20T12:01:44.147Z",
+  "generatedAt": "2026-11-20T12:22:41.660Z",
   "system": {
     "uid": "bzg7cRXTxYAaBltNBwIC",
     "name": "Colaborador"
@@ -84,6 +84,62 @@
   ],
   "modules": [
     {
+      "moduleName": "employee-profile",
+      "title": "Mi perfil",
+      "featureKeys": [
+        "0acb4ea7-733d-4594-94aa-21876cfb6bb4",
+        "a47a7644-9b7a-4b06-89ca-f5d2d3731f9c",
+        "df380210-7e2b-44fc-b772-e16f402cc70f"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/employee-profiles/me",
+          "name": "getMyProfile",
+          "description": "Devuelve los datos personales y laborales del legajo propio y los metadatos del contrato, si existe."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-profiles/me/contract",
+          "name": "getMyContract",
+          "description": "Entrega el archivo del contrato del legajo propio para abrirlo o descargarlo según el parámetro de disposición; responde 404 si no hay contrato."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-profiles/me/trainings",
+          "name": "listMyTrainings",
+          "description": "Devuelve la formación registrada en el legajo propio, incluidos los metadatos de los documentos disponibles."
+        },
+        {
+          "method": "POST",
+          "path": "/api/employee-profiles/me/trainings",
+          "name": "createMyTraining",
+          "description": "Valida y guarda conjuntamente una formación y su único documento PDF, JPG o PNG en el legajo propio."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-profiles/me/trainings/:id/document",
+          "name": "getMyTrainingDocument",
+          "description": "Entrega para abrir o descargar el documento de una formación perteneciente al legajo propio; responde 404 si no existe."
+        }
+      ]
+    },
+    {
+      "moduleName": "employee-benefits",
+      "title": "Beneficios y saldos",
+      "featureKeys": [
+        "d8bd4092-721e-4a34-be18-91b08d9224eb"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/employee-benefits",
+          "name": "listMyBenefits",
+          "description": "Devuelve la fecha de referencia y todos los beneficios asignados al colaborador de la sesión, o una lista vacía si no tiene ninguno; no modifica saldos."
+        }
+      ]
+    },
+    {
       "moduleName": "employee-home",
       "title": "Inicio del colaborador",
       "featureKeys": [
@@ -103,6 +159,48 @@
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "employee-profile",
+        "method": "GET",
+        "path": "/api/employee-profiles/me",
+        "name": "getMyProfile",
+        "description": "Devuelve los datos personales y laborales del legajo propio y los metadatos del contrato, si existe."
+      },
+      {
+        "moduleName": "employee-profile",
+        "method": "GET",
+        "path": "/api/employee-profiles/me/contract",
+        "name": "getMyContract",
+        "description": "Entrega el archivo del contrato del legajo propio para abrirlo o descargarlo según el parámetro de disposición; responde 404 si no hay contrato."
+      },
+      {
+        "moduleName": "employee-profile",
+        "method": "GET",
+        "path": "/api/employee-profiles/me/trainings",
+        "name": "listMyTrainings",
+        "description": "Devuelve la formación registrada en el legajo propio, incluidos los metadatos de los documentos disponibles."
+      },
+      {
+        "moduleName": "employee-profile",
+        "method": "POST",
+        "path": "/api/employee-profiles/me/trainings",
+        "name": "createMyTraining",
+        "description": "Valida y guarda conjuntamente una formación y su único documento PDF, JPG o PNG en el legajo propio."
+      },
+      {
+        "moduleName": "employee-profile",
+        "method": "GET",
+        "path": "/api/employee-profiles/me/trainings/:id/document",
+        "name": "getMyTrainingDocument",
+        "description": "Entrega para abrir o descargar el documento de una formación perteneciente al legajo propio; responde 404 si no existe."
+      },
+      {
+        "moduleName": "employee-benefits",
+        "method": "GET",
+        "path": "/api/employee-benefits",
+        "name": "listMyBenefits",
+        "description": "Devuelve la fecha de referencia y todos los beneficios asignados al colaborador de la sesión, o una lista vacía si no tiene ninguno; no modifica saldos."
+      },
       {
         "moduleName": "employee-home",
         "method": "GET",
@@ -164,10 +262,7 @@
     ],
     "entityTables": [],
     "corsEnvVars": [
-      "FIREBASE_PROJECT_ID",
-      "FIRESTORE_EMULATOR_HOST",
-      "FRONT_URL",
-      "PORT"
+      "FRONT_URL"
     ],
     "databaseEnvVars": [
       "FIREBASE_PROJECT_ID",
@@ -175,9 +270,9 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 5 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 11 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el inicio de sesión usa POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me.",
-    "Frontend: el backend habilita CORS con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, FRONT_URL, PORT; el origen del front tiene que estar ahí.",
+    "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
   "readme": ""
