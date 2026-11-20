@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "layer": "database",
+  "kind": "structure",
+  "generatedAt": "2026-11-20T11:20:55.599Z",
+  "system": {
+    "uid": "bzg7cRXTxYAaBltNBwIC",
+    "name": "Colaborador"
+  },
+  "architecture": {
+    "name": "Cloud Firestore · scripts de carga",
+    "stack": "firestore"
+  },
+  "repositoryPath": "https://github.com/melina-abril/ColaboradorBack",
+  "ports": [
+    {
+      "port": 8085,
+      "file": "firebase.json"
+    }
+  ],
+  "environment": [
+    {
+      "name": "ADMIN_PASSWORD",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js"
+      ]
+    },
+    {
+      "name": "FIREBASE_PROJECT_ID",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "FIRESTORE_EMULATOR_HOST",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "GCLOUD_PROJECT",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js",
+        "scripts/seed.js"
+      ]
+    },
+    {
+      "name": "MIN_PASSWORD_LENGTH",
+      "example": "",
+      "files": [
+        "scripts/create-admin.js"
+      ]
+    }
+  ],
+  "modules": [],
+  "shared": [],
+  "database": {
+    "engine": "firestore",
+    "containers": [],
+    "connectionEnvVars": [
+      "FIREBASE_PROJECT_ID",
+      "FIRESTORE_EMULATOR_HOST",
+      "GCLOUD_PROJECT"
+    ],
+    "tables": [],
+    "firebase": {
+      "projectId": "demo-app",
+      "emulatorHost": "127.0.0.1:8085"
+    }
+  },
+  "relations": [
+    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT."
+  ],
+  "readme": "# Colaborador · Cloud Firestore\n\nBase de datos del Portal del colaborador. Esta estructura inicial no contiene colecciones ni datos de ejemplo; los scripts de carga y esquemas se incorporan con las funcionalidades.\n\n## Requisitos\n\n- Node.js 24 o posterior.\n- Java, requerido por el emulador de Firestore.\n\nInstala las dependencias con `npm install`.\n\n## Desarrollo local\n\nInicia el emulador con `npm run emulator`. Firestore escucha en `127.0.0.1:8085` y el panel del emulador está en `http://127.0.0.1:4005`.\n\nEn otra terminal, ejecuta `npm run seed:emulator` para aplicar los scripts disponibles. También puedes usar `npm run test:seeds` para iniciar el emulador, aplicar los scripts y detenerlo. En esta estructura inicial aún no hay scripts de carga.\n\nEl runner aplica los archivos de `firestore/seeds` por versión y registra los aplicados en `_seedHistory`. Usa `npm run check` para comprobar los scripts sin aplicarlos. No edites un script que ya se haya aplicado: incorpora los cambios en una versión nueva.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` con el identificador de tu proyecto y la ruta a una cuenta de servicio autorizada. Ejecuta `npm run seed` para cargar los scripts y `npm run deploy:firestore` para desplegar las reglas y los índices. No guardes el archivo de credenciales en el repositorio.\n\nCuando exista la colección de usuarios y se haya definido el código del rol administrador, crea la cuenta inicial con `npm run create-admin -- --email=admin@example.com --name=\"Administrador\" --role=CODIGO_ADMIN`. El script toma la contraseña de `ADMIN_PASSWORD` o genera una y la muestra una sola vez. Para restablecerla, repite el comando con `--reset`. En el emulador se utiliza `npm run create-admin:emulator` con los mismos argumentos. No incluyas contraseñas en los scripts de carga.\n\n## Esquema y scripts\n\n| Parte | Colecciones | Scripts |\n|---|---|---|\n| Estructura inicial | Ninguna | Ninguno |\n\nCada funcionalidad que agregue colecciones documentará sus campos en `docs/collections` y aportará un script versionado en `firestore/seeds`. Los índices compuestos necesarios se incorporarán a `firestore.indexes.json`. Las reglas permanecen cerradas: el backend accede mediante el SDK de administrador, que no está sujeto a estas reglas.\n"
+}
