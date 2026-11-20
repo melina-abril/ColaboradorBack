@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "backend",
   "kind": "features",
-  "generatedAt": "2026-11-20T12:22:41.660Z",
+  "generatedAt": "2026-11-20T12:40:44.688Z",
   "system": {
     "uid": "bzg7cRXTxYAaBltNBwIC",
     "name": "Colaborador"
@@ -84,6 +84,39 @@
   ],
   "modules": [
     {
+      "moduleName": "overtime-records",
+      "title": "Horas extras",
+      "featureKeys": [
+        "1c75c359-d50d-408b-b2a6-1e9d37f53d43"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/overtime-records",
+          "name": "listMyOvertimeRecords",
+          "description": "Devuelve los registros del legajo autenticado del más reciente al más antiguo, paginados, junto con los totales de horas compensables, pendientes de revisión y previstas."
+        },
+        {
+          "method": "GET",
+          "path": "/api/overtime-records/:id",
+          "name": "getMyOvertimeRecord",
+          "description": "Devuelve un registro del legajo autenticado, incluido el motivo de rechazo cuando corresponda; responde 404 si no está disponible o no pertenece al legajo."
+        },
+        {
+          "method": "POST",
+          "path": "/api/overtime-records",
+          "name": "createMyOvertimeRecord",
+          "description": "Valida tipo, fecha, horarios, motivo y solicitante; calcula la duración y crea una previsión con estado PLANNED o una carga trabajada con estado PENDING."
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/overtime-records/:id/complete",
+          "name": "completeMyPlannedOvertime",
+          "description": "Valida los horarios reales y actualiza la previsión propia en el mismo documento como WORKED y PENDING, conservando fecha, motivo y solicitante."
+        }
+      ]
+    },
+    {
       "moduleName": "employee-profile",
       "title": "Mi perfil",
       "featureKeys": [
@@ -159,6 +192,34 @@
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "overtime-records",
+        "method": "GET",
+        "path": "/api/overtime-records",
+        "name": "listMyOvertimeRecords",
+        "description": "Devuelve los registros del legajo autenticado del más reciente al más antiguo, paginados, junto con los totales de horas compensables, pendientes de revisión y previstas."
+      },
+      {
+        "moduleName": "overtime-records",
+        "method": "GET",
+        "path": "/api/overtime-records/:id",
+        "name": "getMyOvertimeRecord",
+        "description": "Devuelve un registro del legajo autenticado, incluido el motivo de rechazo cuando corresponda; responde 404 si no está disponible o no pertenece al legajo."
+      },
+      {
+        "moduleName": "overtime-records",
+        "method": "POST",
+        "path": "/api/overtime-records",
+        "name": "createMyOvertimeRecord",
+        "description": "Valida tipo, fecha, horarios, motivo y solicitante; calcula la duración y crea una previsión con estado PLANNED o una carga trabajada con estado PENDING."
+      },
+      {
+        "moduleName": "overtime-records",
+        "method": "PATCH",
+        "path": "/api/overtime-records/:id/complete",
+        "name": "completeMyPlannedOvertime",
+        "description": "Valida los horarios reales y actualiza la previsión propia en el mismo documento como WORKED y PENDING, conservando fecha, motivo y solicitante."
+      },
       {
         "moduleName": "employee-profile",
         "method": "GET",
@@ -270,10 +331,10 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 11 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 15 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el inicio de sesión usa POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me.",
     "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
-  "readme": ""
+  "readme": "# Colaborador · backend\n\nEl backend requiere Node.js 24 o posterior y la base Cloud Firestore descrita en el `README.md` de este repositorio. El archivo `README.md` de la raíz pertenece a la capa database y no se modifica aquí.\n\n## Ejecutar\n\nInicia el emulador y carga los datos según el README de la base. Después ejecuta `npm install` y `npm run dev` para desarrollo, o `npm run build && npm start` para compilar y arrancar la API. La API escucha en el puerto 8080 para el proxy del frontend.\n\nLa configuración se lee del entorno; el proyecto dispone de un `.env.example` fijo. Para el emulador, usa `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Configura `FRONT_URL=http://localhost:4200` para permitir el origen del frontend y `PORT=8080` para el puerto de la API. En producción configura `NODE_ENV=production` y un `JWT_SECRET` aleatorio de al menos 32 caracteres. Consulta el README de la base para crear el primer usuario; este backend no crea usuarios ni carga datos de ejemplo.\n\n## Endpoints\n\nTodos los endpoints de módulos requieren una sesión. La sesión y el endpoint de salud están implementados por los archivos fijos: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` y `GET /api/health`.\n\n- Inicio del colaborador: `GET /api/employee-homes/summary`.\n- Mi perfil: `GET /api/employee-profiles/me`, `GET /api/employee-profiles/me/contract`, `GET /api/employee-profiles/me/trainings`, `POST /api/employee-profiles/me/trainings` y `GET /api/employee-profiles/me/trainings/:id/document`.\n- Beneficios y saldos: `GET /api/employee-benefits`.\n- Horas extras: `GET /api/overtime-records`, `GET /api/overtime-records/:id`, `POST /api/overtime-records` y `PATCH /api/overtime-records/:id/complete`.\n\nMis solicitudes tiene previstos `GET /api/employee-requests`, `GET /api/employee-requests/:id` y `GET /api/employee-requests/form-access`, pero su módulo todavía no contiene un router. Esos endpoints no se montan hasta que se genere el módulo.\n\n## Conexión con las otras capas\n\nEl frontend Angular escucha en `http://localhost:4200` y redirige `/api` a `http://localhost:8080`; el backend permite ese origen mediante `FRONT_URL`. En desarrollo, el backend se conecta al emulador Firestore del proyecto `demo-app` en `127.0.0.1:8085` mediante `FIREBASE_PROJECT_ID` y `FIRESTORE_EMULATOR_HOST`. El frontend no se conecta directamente a Firestore.\n"
 }
