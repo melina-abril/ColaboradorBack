@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "layer": "database",
-  "kind": "structure",
-  "generatedAt": "2026-11-20T11:20:55.599Z",
+  "kind": "features",
+  "generatedAt": "2026-11-20T11:57:23.105Z",
   "system": {
     "uid": "bzg7cRXTxYAaBltNBwIC",
     "name": "Colaborador"
@@ -58,7 +58,31 @@
       ]
     }
   ],
-  "modules": [],
+  "modules": [
+    {
+      "moduleName": "portal-access",
+      "title": "Acceso al portal",
+      "featureKeys": [
+        "4fdc70e0-d11f-409f-81aa-e698260aaee5",
+        "e3559397-d851-4334-bc61-b9aff94c7dda"
+      ],
+      "services": []
+    },
+    {
+      "moduleName": "employee-home",
+      "title": "Inicio del colaborador",
+      "featureKeys": [
+        "0f280802-a8b3-45a1-bc21-59e1a6d10054"
+      ],
+      "services": [],
+      "tables": [
+        "leaveBalances",
+        "employeeRequests",
+        "calendarEvents",
+        "announcements"
+      ]
+    }
+  ],
   "shared": [],
   "database": {
     "engine": "firestore",
@@ -68,14 +92,36 @@
       "FIRESTORE_EMULATOR_HOST",
       "GCLOUD_PROJECT"
     ],
-    "tables": [],
+    "tables": [
+      {
+        "name": "leaveBalances",
+        "moduleName": "employee-home",
+        "columns": null
+      },
+      {
+        "name": "employeeRequests",
+        "moduleName": "employee-home",
+        "columns": null
+      },
+      {
+        "name": "calendarEvents",
+        "moduleName": "employee-home",
+        "columns": null
+      },
+      {
+        "name": "announcements",
+        "moduleName": "employee-home",
+        "columns": null
+      }
+    ],
     "firebase": {
       "projectId": "demo-app",
       "emulatorHost": "127.0.0.1:8085"
     }
   },
   "relations": [
-    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT."
+    "Backend: la base es firestore (en desarrollo, emulador en 127.0.0.1:8085, proyecto demo-app); conéctate con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, GCLOUD_PROJECT.",
+    "Backend: usa EXACTAMENTE estas tablas y columnas (database.tables), sin crear el esquema desde el ORM: leaveBalances, employeeRequests, calendarEvents, announcements."
   ],
-  "readme": "# Colaborador · Cloud Firestore\n\nBase de datos del Portal del colaborador. Esta estructura inicial no contiene colecciones ni datos de ejemplo; los scripts de carga y esquemas se incorporan con las funcionalidades.\n\n## Requisitos\n\n- Node.js 24 o posterior.\n- Java, requerido por el emulador de Firestore.\n\nInstala las dependencias con `npm install`.\n\n## Desarrollo local\n\nInicia el emulador con `npm run emulator`. Firestore escucha en `127.0.0.1:8085` y el panel del emulador está en `http://127.0.0.1:4005`.\n\nEn otra terminal, ejecuta `npm run seed:emulator` para aplicar los scripts disponibles. También puedes usar `npm run test:seeds` para iniciar el emulador, aplicar los scripts y detenerlo. En esta estructura inicial aún no hay scripts de carga.\n\nEl runner aplica los archivos de `firestore/seeds` por versión y registra los aplicados en `_seedHistory`. Usa `npm run check` para comprobar los scripts sin aplicarlos. No edites un script que ya se haya aplicado: incorpora los cambios en una versión nueva.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` y `GOOGLE_APPLICATION_CREDENTIALS` con el identificador de tu proyecto y la ruta a una cuenta de servicio autorizada. Ejecuta `npm run seed` para cargar los scripts y `npm run deploy:firestore` para desplegar las reglas y los índices. No guardes el archivo de credenciales en el repositorio.\n\nCuando exista la colección de usuarios y se haya definido el código del rol administrador, crea la cuenta inicial con `npm run create-admin -- --email=admin@example.com --name=\"Administrador\" --role=CODIGO_ADMIN`. El script toma la contraseña de `ADMIN_PASSWORD` o genera una y la muestra una sola vez. Para restablecerla, repite el comando con `--reset`. En el emulador se utiliza `npm run create-admin:emulator` con los mismos argumentos. No incluyas contraseñas en los scripts de carga.\n\n## Esquema y scripts\n\n| Parte | Colecciones | Scripts |\n|---|---|---|\n| Estructura inicial | Ninguna | Ninguno |\n\nCada funcionalidad que agregue colecciones documentará sus campos en `docs/collections` y aportará un script versionado en `firestore/seeds`. Los índices compuestos necesarios se incorporarán a `firestore.indexes.json`. Las reglas permanecen cerradas: el backend accede mediante el SDK de administrador, que no está sujeto a estas reglas.\n"
+  "readme": "# Colaborador · Cloud Firestore\n\nBase de datos del Portal del colaborador. El backend accede mediante `firebase-admin`; el frontend no se conecta directamente a Firestore. Las reglas deniegan el acceso directo de clientes. Los índices compuestos se añadirán cuando los módulos definan consultas que filtren por un campo y ordenen por otro.\n\n## Requisitos\n\nNode.js 24 o posterior y npm. Ejecuta `npm install`.\n\n## Emulador y carga de datos\n\nEn una terminal, ejecuta `npm run emulator`. Firestore escucha en `127.0.0.1:8085` y el panel del emulador está en `http://localhost:4005`.\n\nEn otra terminal, ejecuta `npm run seed:emulator` para aplicar los scripts disponibles en `firestore/seeds` por versión. El runner registra los scripts aplicados en `_seedHistory`; no edites un script que ya se haya aplicado. `npm run check` revisa los scripts sin cargarlos. También puedes ejecutar `npm run test:seeds` para iniciar el emulador y probar la carga en un solo comando.\n\nEsta estructura inicial aún no incluye scripts de carga. Las colecciones aparecerán cuando se generen los módulos.\n\n## Scripts y colecciones previstos\n\n| Versión | Módulo | Colecciones |\n|---|---|---|\n| Sin script propio | Acceso al portal | Ninguna |\n| V2, `V2__employee_home.js` | Inicio del colaborador | `leaveBalances`, `employeeRequests`, `calendarEvents`, `announcements` |\n\nEl script V2 todavía no forma parte de esta estructura inicial. No hay colecciones compartidas ni script de core en esta generación.\n\n## Proyecto real\n\nConfigura `FIREBASE_PROJECT_ID` con el identificador de tu proyecto y `GOOGLE_APPLICATION_CREDENTIALS` con la ruta a un archivo de credenciales de servicio. No establezcas `FIRESTORE_EMULATOR_HOST` al trabajar contra el proyecto real. Ejecuta `npm run seed` para aplicar los scripts disponibles y `npm run deploy:firestore` para desplegar reglas e índices. Antes del despliegue, verifica que el proyecto seleccionado en Firebase CLI sea el previsto; `.firebaserc` usa `demo-app` por defecto para desarrollo.\n\nCuando el backend defina los roles y exista la colección `users`, crea el primer administrador con `npm run create-admin -- --email=admin@example.com --name=\"Administrador\" --role=CODIGO_ADMIN`, sustituyendo el correo y `CODIGO_ADMIN` por los valores admitidos por el backend. Establece `ADMIN_PASSWORD` antes de ejecutarlo o deja que el comando genere una contraseña y la muestre una sola vez. Usa `--reset` para restablecerla. El acceso inicial a un entorno real no depende de contraseñas de los scripts de carga.\n\n## Conexión con las otras capas\n\nEl backend está en otro repositorio y escucha en el puerto `8080`. Para conectarlo al emulador, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`; son los mismos nombres de variables que utiliza el backend. El frontend escucha en el puerto `4200` y llama al backend bajo `/api`; no necesita credenciales de Firestore ni acceso directo al emulador.\n"
 }
