@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "layer": "backend",
-  "kind": "structure",
-  "generatedAt": "2026-11-20T11:43:45.024Z",
+  "kind": "features",
+  "generatedAt": "2026-11-20T12:01:44.147Z",
   "system": {
     "uid": "bzg7cRXTxYAaBltNBwIC",
     "name": "Colaborador"
@@ -82,11 +82,34 @@
       ]
     }
   ],
-  "modules": [],
+  "modules": [
+    {
+      "moduleName": "employee-home",
+      "title": "Inicio del colaborador",
+      "featureKeys": [
+        "0f280802-a8b3-45a1-bc21-59e1a6d10054"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/employee-homes/summary",
+          "name": "getEmployeeSummary",
+          "description": "Devuelve los saldos de vacaciones, estudio y mudanza, el próximo vencimiento de vacaciones, la última solicitud, la próxima fecha del calendario y el último comunicado del colaborador de la sesión. Las novedades ausentes se devuelven como null y una categoría sin documento se distingue de un saldo de cero."
+        }
+      ]
+    }
+  ],
   "shared": [],
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "employee-home",
+        "method": "GET",
+        "path": "/api/employee-homes/summary",
+        "name": "getEmployeeSummary",
+        "description": "Devuelve los saldos de vacaciones, estudio y mudanza, el próximo vencimiento de vacaciones, la última solicitud, la próxima fecha del calendario y el último comunicado del colaborador de la sesión. Las novedades ausentes se devuelven como null y una categoría sin documento se distingue de un saldo de cero."
+      },
       {
         "moduleName": "",
         "method": "GET",
@@ -152,7 +175,7 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 4 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 5 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el inicio de sesión usa POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me.",
     "Frontend: el backend habilita CORS con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST, FRONT_URL, PORT; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
