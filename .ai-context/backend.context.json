@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "layer": "backend",
   "kind": "features",
-  "generatedAt": "2026-11-20T12:40:44.688Z",
+  "generatedAt": "2026-11-20T12:52:01.307Z",
   "system": {
     "uid": "bzg7cRXTxYAaBltNBwIC",
     "name": "Colaborador"
@@ -83,6 +83,42 @@
     }
   ],
   "modules": [
+    {
+      "moduleName": "employee-home-2",
+      "title": "Calendario personal y comunicados",
+      "featureKeys": [
+        "ee6838c8-1031-4403-9128-02f8cc901791",
+        "b7266c47-98e6-4627-9c69-1532aceed1b5",
+        "8ba384a5-2c23-4813-9837-54c122b9d93a",
+        "8c44a334-5d9f-4b09-85f5-5fd5e6311ab9"
+      ],
+      "services": [
+        {
+          "method": "GET",
+          "path": "/api/employee-homes/summary",
+          "name": "getEmployeeSummary",
+          "description": "Conserva el resumen existente que consume Inicio."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-homes/calendar",
+          "name": "getMyCalendar",
+          "description": "Recibe mes y año obligatorios y devuelve el nombre del colaborador, sus ausencias aprobadas y los feriados aplicables; obtiene la empresa y el legajo de la sesión."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-homes/announcements",
+          "name": "listMyAnnouncements",
+          "description": "Devuelve los comunicados destinados al colaborador, del más reciente al más antiguo, con paginado."
+        },
+        {
+          "method": "GET",
+          "path": "/api/employee-homes/announcements/:id",
+          "name": "getMyAnnouncement",
+          "description": "Devuelve el contenido de un comunicado destinado al colaborador o responde 404 si no está disponible para él."
+        }
+      ]
+    },
     {
       "moduleName": "overtime-records",
       "title": "Horas extras",
@@ -192,6 +228,34 @@
   "backend": {
     "basePath": "/api",
     "endpoints": [
+      {
+        "moduleName": "employee-home-2",
+        "method": "GET",
+        "path": "/api/employee-homes/summary",
+        "name": "getEmployeeSummary",
+        "description": "Conserva el resumen existente que consume Inicio."
+      },
+      {
+        "moduleName": "employee-home-2",
+        "method": "GET",
+        "path": "/api/employee-homes/calendar",
+        "name": "getMyCalendar",
+        "description": "Recibe mes y año obligatorios y devuelve el nombre del colaborador, sus ausencias aprobadas y los feriados aplicables; obtiene la empresa y el legajo de la sesión."
+      },
+      {
+        "moduleName": "employee-home-2",
+        "method": "GET",
+        "path": "/api/employee-homes/announcements",
+        "name": "listMyAnnouncements",
+        "description": "Devuelve los comunicados destinados al colaborador, del más reciente al más antiguo, con paginado."
+      },
+      {
+        "moduleName": "employee-home-2",
+        "method": "GET",
+        "path": "/api/employee-homes/announcements/:id",
+        "name": "getMyAnnouncement",
+        "description": "Devuelve el contenido de un comunicado destinado al colaborador o responde 404 si no está disponible para él."
+      },
       {
         "moduleName": "overtime-records",
         "method": "GET",
@@ -331,10 +395,10 @@
     ]
   },
   "relations": [
-    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 15 endpoints de backend.endpoints con el mismo method y path.",
+    "Frontend: llama al backend en el puerto 8080 con el prefijo /api; consume SOLO los 19 endpoints de backend.endpoints con el mismo method y path.",
     "Frontend: el inicio de sesión usa POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me.",
     "Frontend: el backend habilita CORS con las variables FRONT_URL; el origen del front tiene que estar ahí.",
     "Base de datos: el backend se conecta con las variables FIREBASE_PROJECT_ID, FIRESTORE_EMULATOR_HOST (mismos nombres en el .env.example de la base)."
   ],
-  "readme": "# Colaborador · backend\n\nEl backend requiere Node.js 24 o posterior y la base Cloud Firestore descrita en el `README.md` de este repositorio. El archivo `README.md` de la raíz pertenece a la capa database y no se modifica aquí.\n\n## Ejecutar\n\nInicia el emulador y carga los datos según el README de la base. Después ejecuta `npm install` y `npm run dev` para desarrollo, o `npm run build && npm start` para compilar y arrancar la API. La API escucha en el puerto 8080 para el proxy del frontend.\n\nLa configuración se lee del entorno; el proyecto dispone de un `.env.example` fijo. Para el emulador, usa `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Configura `FRONT_URL=http://localhost:4200` para permitir el origen del frontend y `PORT=8080` para el puerto de la API. En producción configura `NODE_ENV=production` y un `JWT_SECRET` aleatorio de al menos 32 caracteres. Consulta el README de la base para crear el primer usuario; este backend no crea usuarios ni carga datos de ejemplo.\n\n## Endpoints\n\nTodos los endpoints de módulos requieren una sesión. La sesión y el endpoint de salud están implementados por los archivos fijos: `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` y `GET /api/health`.\n\n- Inicio del colaborador: `GET /api/employee-homes/summary`.\n- Mi perfil: `GET /api/employee-profiles/me`, `GET /api/employee-profiles/me/contract`, `GET /api/employee-profiles/me/trainings`, `POST /api/employee-profiles/me/trainings` y `GET /api/employee-profiles/me/trainings/:id/document`.\n- Beneficios y saldos: `GET /api/employee-benefits`.\n- Horas extras: `GET /api/overtime-records`, `GET /api/overtime-records/:id`, `POST /api/overtime-records` y `PATCH /api/overtime-records/:id/complete`.\n\nMis solicitudes tiene previstos `GET /api/employee-requests`, `GET /api/employee-requests/:id` y `GET /api/employee-requests/form-access`, pero su módulo todavía no contiene un router. Esos endpoints no se montan hasta que se genere el módulo.\n\n## Conexión con las otras capas\n\nEl frontend Angular escucha en `http://localhost:4200` y redirige `/api` a `http://localhost:8080`; el backend permite ese origen mediante `FRONT_URL`. En desarrollo, el backend se conecta al emulador Firestore del proyecto `demo-app` en `127.0.0.1:8085` mediante `FIREBASE_PROJECT_ID` y `FIRESTORE_EMULATOR_HOST`. El frontend no se conecta directamente a Firestore.\n"
+  "readme": "# Colaborador · backend\n\nAPI REST para el Portal del colaborador. Requiere Node.js 24 o posterior y Cloud Firestore. El README principal y los archivos de configuración de Firestore pertenecen a la capa de base de datos y no se modifican aquí.\n\n## Desarrollo\n\nInicia el emulador y carga los datos siguiendo el README de la base de datos. Después, en el entorno del backend, configura `FIREBASE_PROJECT_ID=demo-app` y `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`. Ejecuta `npm install` y `npm run dev`. La API escucha en el puerto 8080 por defecto.\n\nPara compilar y ejecutar: `npm run build && npm start`.\n\nLa configuración lee `PORT` (8080 por defecto), `FRONT_URL` (origen permitido para el frontend; en desarrollo, `http://localhost:4200`), `FIREBASE_PROJECT_ID` y `FIRESTORE_EMULATOR_HOST` para la conexión local. En producción, configura `NODE_ENV=production` y un `JWT_SECRET` aleatorio de al menos 32 caracteres. Consulta `src/config/env.ts` y `src/config/database.ts` para las opciones adicionales de sesión y conexión. No uses el emulador en producción.\n\n## Rutas\n\nTodas las rutas de los módulos requieren sesión. `GET /api/health`, `POST /api/auth/login` y `POST /api/auth/logout` son públicas; `GET /api/auth/me` requiere sesión.\n\n- Inicio del colaborador: `GET /api/employee-homes/summary` (conserva el módulo existente).\n- Calendario personal y comunicados: `GET /api/employee-homes/calendar`, `GET /api/employee-homes/announcements` y `GET /api/employee-homes/announcements/:id`.\n- Horas extras: `GET /api/overtime-records`, `GET /api/overtime-records/:id`, `POST /api/overtime-records` y `PATCH /api/overtime-records/:id/complete`.\n- Mi perfil: `GET /api/employee-profiles/me`, `GET /api/employee-profiles/me/contract`, `GET /api/employee-profiles/me/trainings`, `POST /api/employee-profiles/me/trainings` y `GET /api/employee-profiles/me/trainings/:id/document`.\n- Beneficios y saldos: `GET /api/employee-benefits`.\n\n## Conexión con las otras capas\n\nEl frontend Angular escucha en `http://localhost:4200` y dirige `/api` a este backend en `http://localhost:8080`; habilita ese origen mediante `FRONT_URL`. El backend accede a Firestore, cuyo emulador local utiliza el proyecto `demo-app` y escucha en `127.0.0.1:8085`. El frontend no se conecta directamente a Firestore. Para crear el primer usuario, consulta las instrucciones de administrador inicial del README de la base de datos.\n"
 }
