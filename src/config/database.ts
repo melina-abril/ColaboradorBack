@@ -11,7 +11,7 @@ import { env, envText } from './env.js';
  *   "none" para usar el Firestore real. En producción se usa el Firestore real con las credenciales del entorno
  *   (GOOGLE_APPLICATION_CREDENTIALS o las de la cuenta de servicio de Google Cloud).
  */
-const projectId = envText('FIREBASE_PROJECT_ID', 'demo-app');
+const projectId = envText('FIREBASE_PROJECT_ID', envText('GCLOUD_PROJECT', 'demo-app'));
 const emulatorHost = envText('FIRESTORE_EMULATOR_HOST', env.isProduction ? 'none' : '127.0.0.1:8085');
 // firebase-admin lee el emulador de process.env: se fija acá, antes de crear la app (solo config/ lee process.env).
 if (emulatorHost !== 'none') process.env['FIRESTORE_EMULATOR_HOST'] = emulatorHost;
